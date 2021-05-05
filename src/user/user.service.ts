@@ -24,10 +24,12 @@ export class UserService {
     return await this.userRepository.findOne({ id });
   }
 
-  async create({ name, password }): Promise<User> {
+  async create(user: User): Promise<UserEntity> {
     const newUser = new UserEntity();
-    newUser.name = name;
-    newUser.password = password;
+    newUser.name = user.name;
+    newUser.email = user.email;
+    newUser.role = user.role;
+    newUser.password = user.password;
 
     const savedUser = await this.userRepository.save(newUser);
     return savedUser;
@@ -38,13 +40,13 @@ export class UserService {
     return;
   }
 
-  async generateToken(user: User): Promise<any> {
+  async generateToken(id: number, email: string): Promise<any> {
     const date = new Date();
 
     return jwt.sign(
       {
-        id: user.id,
-        name: user.name,
+        id: id,
+        email: email,
         exp: date.getTime() + 1000 * 60 * 60 * 24 * 3,
       },
       process.env.JWT_SECRET,
