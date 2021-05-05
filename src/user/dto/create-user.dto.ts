@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { UserRoles } from '../user.interface';
 
 export class CreateUserDto {
@@ -10,6 +10,7 @@ export class CreateUserDto {
   @IsEmail()
   readonly email: string;
 
+  @IsEnum(UserRoles)
   @IsNotEmpty()
   readonly role: UserRoles;
 

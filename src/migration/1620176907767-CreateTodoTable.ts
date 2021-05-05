@@ -6,12 +6,12 @@ export class CreateTodoTable1620176907767 implements MigrationInterface {
             CREATE TABLE IF NOT EXISTS todos (
               id SERIAL PRIMARY KEY,
               description VARCHAR(140) NOT NULL,
-              due_date TIMESTAMPZ,
-              completed_at TIMESTAMPTZ,
+              due_date TIMESTAMP,
+              completed_at TIMESTAMP,
               user_id INT,
               CONSTRAINT fk_todo_user FOREIGN KEY(user_id) REFERENCES users(id),
-              created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-              updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
             );
           `);
   }

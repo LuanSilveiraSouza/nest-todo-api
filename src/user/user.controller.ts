@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LoginDto } from './dto/login.dto';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
 
@@ -25,7 +26,7 @@ export class UserController {
   @UsePipes(new ValidationPipe())
   @Post()
   async create(@Body() userData: CreateUserDto) {
-    const userExists = await this.userService.findByName(userData.name);
+    const userExists = await this.userService.findByEmail(userData.email);
 
     if (userExists) {
       throw new HttpException(
@@ -41,8 +42,8 @@ export class UserController {
 
   @UsePipes(new ValidationPipe())
   @Post('/login')
-  async login(@Body() userData: CreateUserDto) {
-    const user = await this.userService.findByName(userData.name);
+  async login(@Body() userData: LoginDto) {
+    const user = await this.userService.findByEmail(userData.email);
 
     if (!user) {
       throw new HttpException(
