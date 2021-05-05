@@ -8,7 +8,7 @@ import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
-import { AuthMiddleware } from 'src/common/middlewares/auth.middleware';
+import { AuthMiddleware } from 'src/common/auth.middleware';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity])],

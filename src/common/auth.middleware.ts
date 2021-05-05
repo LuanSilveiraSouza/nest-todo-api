@@ -40,7 +40,7 @@ export class AuthMiddleware implements NestMiddleware {
         );
       }
 
-      req['user'] = { id: user.id, email: user.email };
+      req['user'] = { id: user.id, email: user.email, role: user.role };
       next();
     } else {
       throw new HttpException(

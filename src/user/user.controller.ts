@@ -5,10 +5,12 @@ import {
   HttpException,
   HttpStatus,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { AdminRoleGuard } from 'src/common/admin.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserEntity } from './user.entity';
@@ -19,6 +21,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
+  @UseGuards(AdminRoleGuard)
   async findAll(): Promise<UserEntity[]> {
     return await this.userService.findAll();
   }
