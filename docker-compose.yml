@@ -11,7 +11,7 @@ services:
         networks:
             - webnet
         volumes:
-            - ./:/app
+            - .:/app
             - /app/node_modules
         restart: on-failure
         depends_on:
