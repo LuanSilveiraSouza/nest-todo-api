@@ -1,6 +1,13 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserRoles } from './user.interface';
+import { TodoEntity } from 'src/todo/todo.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -30,4 +37,7 @@ export class UserEntity {
       parseInt(process.env.SALT_ROUNDS),
     );
   }
+
+  @OneToMany((type) => TodoEntity, (todo) => todo.user)
+  todos: TodoEntity[];
 }
