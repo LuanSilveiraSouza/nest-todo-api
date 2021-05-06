@@ -20,6 +20,10 @@ export class UserService {
     return await this.userRepository.findOne({ email });
   }
 
+  async findById(id: number): Promise<UserEntity> {
+    return await this.userRepository.findOne({ id }, { relations: ['todos'] });
+  }
+
   async create(user: User): Promise<UserEntity> {
     const newUser = new UserEntity();
     newUser.name = user.name;
