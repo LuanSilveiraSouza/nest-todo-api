@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
   UsePipes,
@@ -26,8 +27,10 @@ export class TodoController {
 
   @Get()
   @UseGuards(AdminRoleGuard)
-  async findAll(): Promise<TodoEntity[]> {
-    return await this.todoService.findAll();
+  async findAll(@Query() query): Promise<TodoEntity[]> {
+    console.log(query);
+
+    return await this.todoService.findAll(query.delayed);
   }
 
   @Get('/self')
@@ -40,7 +43,7 @@ export class TodoController {
   async create(
     @Req() req: Request,
     @Body() todoData: CreateTodoDto,
-  ): Promise<TodoEntity> {
+  ): Promise<any> {
     const result = this.todoService.create(
       req['user'].id,
       todoData.description,
@@ -56,7 +59,7 @@ export class TodoController {
       );
     }
 
-    return result;
+    return { message: 'Todo created' };
   }
 
   @UsePipes(new ValidationPipe())

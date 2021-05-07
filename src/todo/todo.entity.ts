@@ -1,5 +1,6 @@
 import { UserEntity } from 'src/user/user.entity';
 import {
+  AfterLoad,
   BeforeUpdate,
   Column,
   Entity,
@@ -27,6 +28,13 @@ export class TodoEntity {
 
   @Column()
   updated_at: Date;
+
+  delayed: boolean;
+
+  @AfterLoad()
+  isDelayed() {
+    this.delayed = this.due_date.getTime() <= Date.now();
+  }
 
   @BeforeUpdate()
   async updateDate() {

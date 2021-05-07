@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
-import { Repository } from 'typeorm';
+import { Raw, Repository } from 'typeorm';
 import { TodoEntity } from './todo.entity';
 
 @Injectable()
@@ -12,8 +12,17 @@ export class TodoService {
     private readonly todoRepository: Repository<TodoEntity>,
   ) {}
 
-  async findAll(): Promise<TodoEntity[]> {
-    return await this.todoRepository.find({ relations: ['user'] });
+  async findAll(onlyDelayed = false): Promise<TodoEntity[]> {
+    const where = {};
+
+    if (onlyDelayed) {
+      where['due_date'] = Raw((alias) => `${alias} < CURRENT_TIMESTAMP`);
+    }
+
+    return await this.todoRepository.find({
+      where,
+      relations: ['user'],
+    });
   }
 
   async findByUserId(id: number): Promise<TodoEntity[]> {
