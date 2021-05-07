@@ -28,8 +28,6 @@ export class TodoController {
   @Get()
   @UseGuards(AdminRoleGuard)
   async findAll(@Query() query): Promise<TodoEntity[]> {
-    console.log(query);
-
     return await this.todoService.findAll(query.delayed);
   }
 
