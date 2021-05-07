@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
-import { getRepository, Raw, Repository } from 'typeorm';
+import { getRepository, Repository } from 'typeorm';
 import { TodoEntity } from './todo.entity';
 
 @Injectable()
@@ -12,10 +12,14 @@ export class TodoService {
     private readonly todoRepository: Repository<TodoEntity>,
   ) {}
 
-  async findAll(onlyDelayed = false): Promise<TodoEntity[]> {
+  async findAll(options: {
+    onlyDelayed?: boolean;
+    limit?: number;
+    offset?: number;
+  }): Promise<TodoEntity[]> {
     let where = '';
 
-    if (onlyDelayed) {
+    if (options.onlyDelayed) {
       where = 'todo.due_date < CURRENT_TIMESTAMP';
     }
 
@@ -24,6 +28,8 @@ export class TodoService {
       .leftJoinAndSelect('todo.user', 'user')
       .select(['todo.due_date', 'todo.description', 'user.email'])
       .where(where)
+      .limit(options.limit || 1)
+      .offset(options.offset || 0)
       .getMany();
   }
 
