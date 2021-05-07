@@ -1,16 +1,14 @@
 import {
   Body,
   Controller,
-  Get,
   HttpException,
   HttpStatus,
   Post,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { ApiResponse } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
-import { AdminRoleGuard } from 'src/common/admin.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserEntity } from './user.entity';
@@ -20,12 +18,15 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
-  @UseGuards(AdminRoleGuard)
-  async findAll(): Promise<UserEntity[]> {
-    return await this.userService.findAll();
-  }
-
+  @ApiResponse({
+    status: 201,
+    description: 'Created user',
+    type: UserEntity,
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'User already exists',
+  })
   @UsePipes(new ValidationPipe())
   @Post()
   async create(@Body() userData: CreateUserDto) {
@@ -43,6 +44,18 @@ export class UserController {
     return this.userService.create({ ...userData });
   }
 
+  @ApiResponse({
+    status: 201,
+    description: 'Auth token',
+  })
+  @ApiResponse({
+    status: 401,
+    description: `User don't exists`,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Wrong password',
+  })
   @UsePipes(new ValidationPipe())
   @Post('/login')
   async login(@Body() userData: LoginDto) {

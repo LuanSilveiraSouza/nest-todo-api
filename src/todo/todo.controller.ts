@@ -14,6 +14,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 import { AdminRoleGuard } from 'src/common/admin.guard';
 import { CreateTodoDto } from './dto/create-todo.dto';
@@ -21,10 +22,31 @@ import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodoEntity } from './todo.entity';
 import { TodoService } from './todo.service';
 
+@ApiBearerAuth()
 @Controller('todos')
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
+  @ApiQuery({
+    name: 'delayed',
+    type: Boolean,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'offset',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: Boolean,
+    required: false,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Todo list off all users',
+    type: TodoEntity,
+  })
   @Get()
   @UseGuards(AdminRoleGuard)
   async findAll(@Query() query): Promise<TodoEntity[]> {
@@ -35,11 +57,24 @@ export class TodoController {
     });
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Todo list off the current user',
+    type: TodoEntity,
+  })
   @Get('/self')
   async findByUserId(@Req() req: Request): Promise<TodoEntity[]> {
     return await this.todoService.findByUserId(req['user'].id);
   }
 
+  @ApiResponse({
+    status: 201,
+    description: 'Created todo',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'User not found',
+  })
   @UsePipes(new ValidationPipe())
   @Post()
   async create(
@@ -64,6 +99,15 @@ export class TodoController {
     return { message: 'Todo created' };
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Updated todo',
+    type: TodoEntity,
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Todo not found',
+  })
   @UsePipes(new ValidationPipe())
   @Put('/:id')
   async update(
@@ -88,6 +132,15 @@ export class TodoController {
     return result;
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Updated todo',
+    type: TodoEntity,
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Todo not found',
+  })
   @UsePipes(new ValidationPipe())
   @Put('/:id/complete')
   async complete(@Param() params): Promise<TodoEntity> {
@@ -108,6 +161,10 @@ export class TodoController {
     return result;
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Deleted todo',
+  })
   @Delete('/:id')
   async delete(@Param() params) {
     return await this.todoService.delete(params.id);

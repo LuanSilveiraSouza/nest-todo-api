@@ -8,18 +8,23 @@ import {
 import * as bcrypt from 'bcrypt';
 import { UserRoles } from './user.interface';
 import { TodoEntity } from 'src/todo/todo.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('users')
 export class UserEntity {
+  @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty()
   @Column()
   name: string;
 
+  @ApiProperty()
   @Column()
   email: string;
 
+  @ApiProperty()
   @Column({
     type: 'enum',
     enum: UserRoles,
@@ -27,6 +32,7 @@ export class UserEntity {
   })
   role: UserRoles;
 
+  @ApiProperty()
   @Column()
   password: string;
 
@@ -38,6 +44,7 @@ export class UserEntity {
     );
   }
 
+  @ApiProperty()
   @OneToMany((type) => TodoEntity, (todo) => todo.user)
   todos: TodoEntity[];
 }
