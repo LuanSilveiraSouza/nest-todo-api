@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Req,
   UseGuards,
   UsePipes,
@@ -15,6 +16,7 @@ import {
 import { Request } from 'express';
 import { AdminRoleGuard } from 'src/common/admin.guard';
 import { CreateTodoDto } from './dto/create-todo.dto';
+import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodoEntity } from './todo.entity';
 import { TodoService } from './todo.service';
 
@@ -35,14 +37,17 @@ export class TodoController {
 
   @UsePipes(new ValidationPipe())
   @Post()
-  async create(@Req() req: Request, @Body() todoData: CreateTodoDto) {
+  async create(
+    @Req() req: Request,
+    @Body() todoData: CreateTodoDto,
+  ): Promise<TodoEntity> {
     const result = this.todoService.create(
       req['user'].id,
       todoData.description,
       todoData.due_date,
     );
 
-    if (result) {
+    if (!result) {
       throw new HttpException(
         {
           message: 'User not found',
@@ -50,6 +55,52 @@ export class TodoController {
         HttpStatus.CONFLICT,
       );
     }
+
+    return result;
+  }
+
+  @UsePipes(new ValidationPipe())
+  @Put('/:id')
+  async update(
+    @Param() params,
+    @Body() todoData: UpdateTodoDto,
+  ): Promise<TodoEntity> {
+    const result = this.todoService.update({
+      id: params.id,
+      description: todoData.description,
+      due_date: todoData.due_date,
+    });
+
+    if (!result) {
+      throw new HttpException(
+        {
+          message: 'Todo not found',
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    return result;
+  }
+
+  @UsePipes(new ValidationPipe())
+  @Put('/:id/complete')
+  async complete(@Param() params): Promise<TodoEntity> {
+    const result = this.todoService.update({
+      id: params.id,
+      completed_at: new Date(),
+    });
+
+    if (!result) {
+      throw new HttpException(
+        {
+          message: 'Todo not found',
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    return result;
   }
 
   @Delete('/:id')

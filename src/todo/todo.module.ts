@@ -21,9 +21,6 @@ export class TodoModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .forRoutes(
-        { path: 'todos', method: RequestMethod.ALL },
-        { path: 'todos/self', method: RequestMethod.GET },
-      );
+      .forRoutes({ path: 'todos*', method: RequestMethod.ALL });
   }
 }

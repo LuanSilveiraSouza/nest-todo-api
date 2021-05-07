@@ -27,21 +27,30 @@ export class AuthMiddleware implements NestMiddleware {
 
       const token = header.toString().split(' ')[1];
 
-      const decoded: any = jwt.verify(token, process.env.JWT_SECRET);
+      try {
+        const decoded: any = jwt.verify(token, process.env.JWT_SECRET);
 
-      const user = await this.userService.findByEmail(decoded.email);
+        const user = await this.userService.findByEmail(decoded.email);
 
-      if (!user) {
+        if (!user) {
+          throw new HttpException(
+            {
+              message: `Invalid token`,
+            },
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+
+        req['user'] = { id: user.id, email: user.email, role: user.role };
+        next();
+      } catch (e) {
         throw new HttpException(
           {
-            message: `Invalid token`,
+            message: `Internal server error`,
           },
-          HttpStatus.UNAUTHORIZED,
+          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
-
-      req['user'] = { id: user.id, email: user.email, role: user.role };
-      next();
     } else {
       throw new HttpException(
         {
