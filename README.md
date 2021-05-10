@@ -24,6 +24,7 @@ Nest Todo API
 This project implements a Todo API using NestJS. It uses many functionalities of the framework, such as middlewares, guards, dependency injection, documentation, etc. 
 The project uses TypeORM, Postgres and Docker too.
 
+Check and import the [API calls documentation for Insomnia](./docs/Insomnia)
 
 # :rocket: How to Run
 
